@@ -30,6 +30,8 @@ class ConcurrenflictFormMixin(forms.ModelForm):
 
 
     def clean(self):
+        #@TODO revize and make a docstring
+
         # The 'model_json' field is hidden, and as such the user can't change it
         # (at least without hacking on the POST data).
         # So the value we get back for the 'model_json' field is effectively the value
@@ -68,22 +70,50 @@ class ConcurrenflictFormMixin(forms.ModelForm):
             data_at_get = simplejson.loads(json_at_get)
             data_at_post = simplejson.loads(json_at_post)
 
+            temp_form = self.__class__(initial=data_at_post, prefix='concurenflict')
+
             for key, val_at_get in data_at_get.iteritems():
                 if key == self.concurrenflict_field_name:
                     continue
-                val_at_post = data_at_post.get(key, None)
+                #if isinstance(val_at_get, basestring):
+                #    val_at_get = unicode(val_at_get)
+                val_at_post = data_at_post.get(key, '')
+                #if isinstance(val_at_post, basestring):
+                #    val_at_post = unicode(val_at_get)
                 if val_at_post != val_at_get:
 
                     have_diff = True
-                    # We know these are not in self._errors now
-                    msg = mark_safe(u'This field has changed! New Value: <input value="%s" />' % escape(val_at_post))
+
+                    # this does not render on MultySelect widget (and other Multy-something, it seems)
+                    # temp_form[key].field.widget.attrs['disabled'] = 'disabled'
+
+                    js_fix = '''
+                    <script type="text/javascript">
+                        (function($){
+                            $(function(){
+                                $('[name^="%(html_name)s"]').attr('disabled', 'disabled');
+                                $('#add_id_%(html_name)s').remove();
+                            });
+                        })(window.jQuery||django.jQuery);
+                    </script>
+                    ''' % {'html_name': temp_form[key].html_name}
+
+                    temp_form.data[key] = val_at_post
+
+                    temp_field = unicode(temp_form[key])
+
+                    msg = mark_safe(u'This field has changed! New Value: <div>%s</div>%s' % (temp_field, js_fix,) )
+
                     #@TODO Django 1.7 use Form.add_error()
+                    # We know these are not in self._errors now
                     self._errors[key] = self.error_class([msg])
 
                     # These fields are no longer valid. Remove them from the
                     # cleaned data.
-                    del self.cleaned_data[key]
+                    # del self.cleaned_data[key]
 
         if have_diff:
-            raise forms.ValidationError("This record has changed since you started editing it.")
+            raise forms.ValidationError(u"This record has changed since you started editing it.")
+
+        return self.cleaned_data
 
