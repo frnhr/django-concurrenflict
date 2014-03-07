@@ -37,17 +37,24 @@ class ConcurrenflictFormMixin(forms.ModelForm):
         # there's no old record that could have changed while this one was being worked on
         if json_at_post and (json_at_post != json_at_get):
 
-            model_before = serializers.deserialize('json', json_at_get).next().object
-            model_after = serializers.deserialize('json', json_at_post).next().object
+            serial_data_before = serializers.deserialize('json', json_at_get).next()
+            model_before = serial_data_before.object
+            m2m_before = serial_data_before.m2m_data
+            serial_data_after = serializers.deserialize('json', json_at_post).next()
+            model_after = serial_data_after.object
+            m2m_after = serial_data_after.m2m_data
 
             fake_form = self.__class__(instance=model_after, prefix='concurrenflict')
 
-            for field in model_before._meta.fields:
-                key = field.name
+            for field in model_before._meta.fields + m2m_before.keys():
+                try:
+                    key = field.name
+                except AttributeError:
+                    key = field  # m2m_before is dict, model._meta.fields is list of Fields
                 if key == self.concurrenflict_field_name:
                     continue
-                value_before = getattr(model_before, key)
-                value_after = getattr(model_after, key, '')
+                value_before = getattr(model_before, key, m2m_before.get(key))
+                value_after = getattr(model_after, key, m2m_after.get(key, ''))
                 if value_after != value_before:
                     have_diff = True
                     fake_form.data[key] = value_after
