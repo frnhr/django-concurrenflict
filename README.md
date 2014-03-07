@@ -66,6 +66,8 @@ Write da tests!
 
 Add screenshots to README
 
+Option to use sessions storage instead of json field.
+
 Test against Django 1.7a
 
 Feature for django-admin: AJAX notice when two users are editing the same object
