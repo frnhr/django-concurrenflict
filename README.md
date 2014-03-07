@@ -55,6 +55,9 @@ with:
 If `ModelForm` are extending `forms.ModelForm` then minor edits are needed to remove "forms."
 
 
+## Credits
+
+The inspiration came from a post by **David-761** in [this forum thread][1] and [this pastebin][2].
 
 
 ## Todo & Ideas
@@ -68,4 +71,6 @@ Test against Django 1.7a
 Feature for django-admin: AJAX notice when two users are editing the same object
 
 
+[1]: http://python.6.x6.nabble.com/Admin-interface-not-preventing-simultaneous-editing-of-the-same-record-td502368.htmt    "Admin interface not preventing simultaneous editing of the same record"
+[2]: http://pastebin.com/f3b2c03cb    "FooAdminForm"
 
