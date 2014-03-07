@@ -59,8 +59,8 @@ class ConcurrenflictFormMixin(forms.ModelForm):
                     have_diff = True
                     fake_form.data[key] = value_after
                     # this does not work for MultiSelect widget (and other Multi-something) widgets:
-                    #fake_form[key].field.widget.attrs['disabled'] = 'disabled'
-                    # so instead:
+                    fake_form[key].field.widget.attrs['disabled'] = 'disabled'
+                    # so to make sure:
                     js_fix = '''
                     <script type="text/javascript">
                         (function($){
@@ -73,7 +73,8 @@ class ConcurrenflictFormMixin(forms.ModelForm):
                     ''' % {'html_name': fake_form[key].html_name}
 
                     temp_field = unicode(fake_form[key])
-                    msg = mark_safe(u'This field has changed! New Value: <div>%s</div>%s' % (temp_field, js_fix,))
+                    msg = mark_safe(u'This field has changed! New Value: <div class="concurrenflict_disabled_widget">%s</div>%s'
+                                    % (temp_field, js_fix,))
                     #@TODO Django 1.7: use Form.add_error()
                     self._errors[key] = self.error_class([msg])
 
