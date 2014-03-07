@@ -70,6 +70,8 @@ Test against Django 1.7a
 
 Feature for django-admin: AJAX notice when two users are editing the same object
 
+Feature for django-admin: option to save last request.user and show it in the error (if it was a user)
+
 
 [1]: http://python.6.x6.nabble.com/Admin-interface-not-preventing-simultaneous-editing-of-the-same-record-td502368.htmt    "Admin interface not preventing simultaneous editing of the same record"
 [2]: http://pastebin.com/f3b2c03cb    "FooAdminForm"
