@@ -78,17 +78,11 @@ The inspiration came from a post by **David-761** in [this forum thread][1] and 
 
 ## Todo & Ideas
 
-Write da tests!
-
-Add screenshots to README
-
-Option to use sessions storage instead of json field.
-
-Test against Django 1.7a
-
-Feature for django-admin: AJAX notice when two users are editing the same object
-
-Feature for django-admin: option to save last request.user and show it in the error (if it was a user)
+ * Write da tests!
+ * Option to use sessions storage instead of json field.
+ * Test against Django 1.7a
+ * Feature for django-admin: AJAX notice when two users are editing the same object
+ * Feature for django-admin: option to save last request.user and show it in the error (if it was a user)
 
 
 [1]: http://python.6.x6.nabble.com/Admin-interface-not-preventing-simultaneous-editing-of-the-same-record-td502368.htmt    "Admin interface not preventing simultaneous editing of the same record"
