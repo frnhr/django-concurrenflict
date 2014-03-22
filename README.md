@@ -24,6 +24,22 @@ Concurrency problem just happened: the edits from step 2 are lost! And nobody ha
  
  * If the `SomeModel` instance has been modified, but the submitted changes are not in conflict with the modifications, then nothing will happen, i.e. the save will proceed as usual.
 
+## Screenshots
+
+Frontend (using django-bootstrap-toolkit for CSS, but works regardless of any custom CSS)
+
+![Frontend form](docs_img/bootstrap.png)
+
+Admin
+
+![Admin form](docs_img/admin.png)
+
+Looks much better with Grappelli
+
+![Admin form](docs_img/grappelli.png)
+
+
+
 ## Implementation & Usage
 
 **django-concurrenflict** provides `ConcurrenflictFormMixin` mixin. The mixin adds a json hidden field to the form. On `clean()` the content of json field is compared against the being edited (fetched fresh from the database). If conflicting modifications are found, field validation fails.
@@ -66,9 +82,13 @@ Write da tests!
 
 Add screenshots to README
 
+Option to use sessions storage instead of json field.
+
 Test against Django 1.7a
 
 Feature for django-admin: AJAX notice when two users are editing the same object
+
+Feature for django-admin: option to save last request.user and show it in the error (if it was a user)
 
 
 [1]: http://python.6.x6.nabble.com/Admin-interface-not-preventing-simultaneous-editing-of-the-same-record-td502368.htmt    "Admin interface not preventing simultaneous editing of the same record"

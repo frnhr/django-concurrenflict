@@ -1,3 +1,4 @@
+import simplejson
 from django import forms
 from django.core import serializers
 from django.utils.html import mark_safe
@@ -35,7 +36,10 @@ class ConcurrenflictFormMixin(forms.ModelForm):
 
         # if json_at_post is None then this is an add() rather than a change(), so
         # there's no old record that could have changed while this one was being worked on
-        if json_at_post and (json_at_post != json_at_get):
+        if json_at_post and json_at_get and (json_at_post != json_at_get):
+
+            json_data_before = simplejson.loads(json_at_get)
+            json_data_after = simplejson.loads(json_at_post)
 
             serial_data_before = serializers.deserialize('json', json_at_get).next()
             model_before = serial_data_before.object
@@ -53,13 +57,18 @@ class ConcurrenflictFormMixin(forms.ModelForm):
                     key = field  # m2m_before is dict, model._meta.fields is list of Fields
                 if key == self.concurrenflict_field_name:
                     continue
-                value_before = getattr(model_before, key, m2m_before.get(key))
-                value_after = getattr(model_after, key, m2m_after.get(key, ''))
-                if value_after != value_before:
+                if key not in fake_form.fields.keys():
+                    continue
+                json_value_before = json_data_before[0]['fields'].get(key, None)
+                json_value_after = json_data_after[0]['fields'].get(key, None)
+                if json_value_after != json_value_before:
+                    value_before = getattr(model_before, key, m2m_before.get(key))
+                    value_after = getattr(model_after, key, m2m_after.get(key, ''))
                     have_diff = True
                     fake_form.data[key] = value_after
                     # this does not work for MultiSelect widget (and other Multi-something) widgets:
-                    fake_form[key].field.widget.attrs['disabled'] = 'disabled'
+                    # ANDDD this appears to not be thread-safe! (faceplam)
+                    #fake_form[key].field.widget.attrs['disabled'] = 'disabled'
                     # so to make sure:
                     js_fix = '''
                     <script type="text/javascript">
